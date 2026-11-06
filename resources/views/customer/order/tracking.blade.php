@@ -50,6 +50,7 @@
                     <a href="{{ route('customer.menu', ['session' => $order->session_token]) }}" class="p-2 -ml-2 text-slate-500 hover:text-slate-800 hover:bg-slate-100 rounded-xl transition-colors">
                         <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
                     </a>
+                    <x-resto-logo size="xs" class="shrink-0" />
                     <div>
                         <h1 class="font-bold text-slate-800 text-sm sm:text-base">Lacak Pesanan</h1>
                         <p class="text-[10px] sm:text-xs text-slate-400 font-mono font-bold">{{ $order->order_number }}</p>
@@ -300,7 +301,7 @@
 
                     <div class="bg-white rounded-3xl shadow-lg shadow-slate-200/60 border border-slate-100 p-5 sm:p-6">
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Detail Pesanan</h3>
-                        <div class="grid grid-cols-2 gap-4">
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                             <div class="flex items-center gap-3">
                                 <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
                                     <svg class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"/></svg>
@@ -515,10 +516,12 @@
 </style>
 
 @push('scripts')
-@if(config('services.midtrans.is_production'))
-<script src="https://app.midtrans.com/snap/snap.js" data-client-key="{{ config('services.midtrans.client_key') }}"></script>
-@else
-<script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('services.midtrans.client_key') }}"></script>
+@if($order->payment_method === 'online' && $order->status === 'pending_payment' && $order->snap_token)
+    @if(config('services.midtrans.is_production'))
+    <script src="https://app.midtrans.com/snap/snap.js" data-client-key="{{ config('services.midtrans.client_key') }}"></script>
+    @else
+    <script src="https://app.sandbox.midtrans.com/snap/snap.js" data-client-key="{{ config('services.midtrans.client_key') }}"></script>
+    @endif
 @endif
 <script>
 function trackingApp() {
@@ -555,8 +558,9 @@ function trackingApp() {
         },
 
         get progressText() {
-            const current = this.currentFlowIdx + 1;
-            return current + '/6 langkah';
+            const total = Object.keys(this.statusFlowMap).length || 6;
+            const current = Math.min(this.currentFlowIdx + 1, total);
+            return current + '/' + total + ' langkah';
         },
 
         // Central handler for status changes (used by both Echo and polling)

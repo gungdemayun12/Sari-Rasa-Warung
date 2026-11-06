@@ -6,7 +6,7 @@
     <div class="space-y-6">
 
         <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            @php $scColors = ['pending' => 'bg-yellow-50 border-yellow-200 text-yellow-700', 'processing' => 'bg-blue-50 border-blue-200 text-blue-700', 'ready' => 'bg-emerald-50 border-emerald-200 text-emerald-700', 'completed' => 'bg-slate-50 border-slate-200 text-slate-600']; @endphp
+            @php $scColors = ['pending' => 'status-summary status-summary-pending', 'processing' => 'status-summary status-summary-processing', 'ready' => 'status-summary status-summary-ready', 'completed' => 'status-summary status-summary-completed']; @endphp
             <a href="{{ role_route('admin.orders.index', ['status' => 'pending', 'date' => request('date')]) }}" class="{{ $scColors['pending'] }} border rounded-2xl p-4 hover:shadow-md transition-all cursor-pointer group">
                 <div class="flex items-center justify-between">
                     <p class="text-[10px] font-black uppercase tracking-widest opacity-70">Menunggu</p>
@@ -38,7 +38,7 @@
         </div>
 
         <div id="realtime-status"
-            class="hidden items-center gap-2 px-5 py-3 bg-emerald-50 border border-emerald-100 rounded-2xl text-sm text-emerald-700 font-bold shadow-sm">
+            class="hidden items-center gap-2 px-5 py-3 border rounded-2xl text-sm font-bold shadow-sm realtime-status-banner">
             <span class="relative flex h-3 w-3">
                 <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-emerald-400 opacity-75"></span>
                 <span class="relative inline-flex rounded-full h-3 w-3 bg-emerald-500"></span>

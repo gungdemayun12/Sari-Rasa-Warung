@@ -49,7 +49,7 @@
     <div class="max-w-lg mx-auto px-4 py-6">
         <div class="grid grid-cols-2 gap-4">
             @foreach($menuItems as $item)
-            <div x-show="(activeCategory === 'all' || activeCategory === '{{ $item->category_id }}') && '{{ strtolower(addslashes($item->name)) }}'.includes(search.toLowerCase())" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="bg-white rounded-3xl shadow-[0_4px_20px_rgb(0,0,0,0.06)] border border-slate-100 overflow-hidden hover:shadow-[0_10px_30px_rgba(245,158,11,0.15)] hover:border-amber-200 hover:-translate-y-1.5 transition-all duration-300 group flex flex-col relative z-10">
+            <div x-show="(activeCategory === 'all' || activeCategory === '{{ $item->category_id }}') && '{{ strtolower(addslashes($item->name)) }}'.includes(search.toLowerCase())" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4" x-transition:enter-end="opacity-100 translate-y-0" class="bg-white rounded-3xl shadow-sm border border-slate-100/80 overflow-hidden hover:shadow-2xl hover:shadow-amber-500/12 hover:border-amber-200/70 hover:-translate-y-1.5 transition-all duration-300 group flex flex-col relative cursor-pointer">
                 <div class="relative aspect-square bg-slate-100 overflow-hidden">
                     <img src="{{ $item->image_url }}" alt="{{ $item->name }}" loading="lazy" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500">
                     <div class="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300"></div>
@@ -70,14 +70,18 @@
                         <p class="text-sm font-bold text-amber-600">{{ $item->formatted_price }}</p>
                         
                         <div class="flex items-center gap-2">
-                            <button x-show="getItemQty({{ $item->id }}) === 0" @click="addToCart({{ json_encode(['id'=>$item->id,'name'=>$item->name,'price'=>$item->price,'image'=>$item->image_url]) }})" class="w-9 h-9 bg-amber-500 text-white rounded-xl flex items-center justify-center hover:bg-amber-600 transition-all shadow-md active:scale-90 shadow-amber-500/20">
-                                <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v12m6-6H6"/></svg>
+                            <button x-show="getItemQty({{ $item->id }}) === 0" @click="addToCart({{ json_encode(['id'=>$item->id,'name'=>$item->name,'price'=>$item->price,'image'=>$item->image_url]) }})" class="w-9 h-9 bg-slate-900 text-white rounded-2xl flex items-center justify-center hover:bg-gradient-to-br hover:from-amber-500 hover:to-amber-600 hover:shadow-lg hover:shadow-amber-500/40 transition-all duration-200 active:scale-75 group/btn">
+                                <svg class="w-4 h-4 group-hover/btn:rotate-90 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v12m6-6H6"/></svg>
                             </button>
                             
-                            <div x-show="getItemQty({{ $item->id }}) > 0" class="flex items-center gap-2 bg-slate-100/80 rounded-xl p-1 shadow-inner border border-slate-200/50" x-cloak>
-                                <button @click="updateQty({{ $item->id }}, -1)" class="w-7 h-7 bg-white text-slate-600 rounded-lg flex items-center justify-center font-bold shadow-sm active:scale-90 transition-transform">-</button>
-                                <span class="text-xs font-bold text-slate-800 w-4 text-center" x-text="getItemQty({{ $item->id }})"></span>
-                                <button @click="updateQty({{ $item->id }}, 1)" class="w-7 h-7 bg-amber-500 text-white rounded-lg flex items-center justify-center font-bold shadow-sm active:scale-90 transition-transform shadow-amber-500/30">+</button>
+                            <div x-show="getItemQty({{ $item->id }}) > 0" class="flex items-center gap-0.5 bg-slate-100 rounded-2xl overflow-hidden shadow-inner border border-slate-200/50 p-0.5" x-cloak>
+                                <button @click="updateQty({{ $item->id }}, -1)" class="w-8 h-8 bg-white text-slate-600 rounded-xl flex items-center justify-center font-bold hover:bg-red-50 hover:text-red-500 active:scale-90 transition-all shadow-sm">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M20 12H4"/></svg>
+                                </button>
+                                <span class="text-xs font-black text-slate-800 w-5 text-center" x-text="getItemQty({{ $item->id }})"></span>
+                                <button @click="updateQty({{ $item->id }}, 1)" class="w-8 h-8 bg-gradient-to-br from-amber-500 to-amber-600 text-white rounded-xl flex items-center justify-center font-bold active:scale-90 transition-all shadow-sm hover:from-amber-600 hover:to-amber-700">
+                                    <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 6v12m6-6H6"/></svg>
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -91,17 +95,33 @@
          x-transition:enter="transition transform ease-out duration-300"
          x-transition:enter-start="translate-y-full opacity-0"
          x-transition:enter-end="translate-y-0 opacity-100"
-         class="fixed bottom-0 left-0 right-0 z-[100] safe-area-bottom pb-8 px-4 bg-gradient-to-t from-slate-50 via-slate-50/80 to-transparent pt-8">
+         class="fixed bottom-0 left-0 right-0 z-[100] safe-area-bottom pb-5 px-4 bg-gradient-to-t from-slate-50/95 via-slate-50/80 to-transparent pt-8">
         <div class="max-w-lg mx-auto">
-            <a href="{{ route('customer.checkout', ['session' => $sessionToken]) }}" class="block w-full bg-slate-900 text-white px-6 py-3 rounded-2xl shadow-xl transition-all active:scale-[0.98] border border-slate-700">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center gap-2">
-                        <span class="bg-amber-500 text-slate-900 text-[10px] font-black px-2 py-0.5 rounded-lg" x-text="totalItems"></span>
-                        <span class="text-xs font-bold uppercase tracking-wide">Item Terpilih</span>
+            <a href="{{ route('customer.checkout', ['session' => $sessionToken]) }}"
+               class="group flex items-center justify-between gap-3 w-full bg-gradient-to-r from-slate-900 to-slate-800 text-white px-5 py-4 rounded-3xl shadow-2xl shadow-slate-900/40 transition-all active:scale-[0.98] border border-slate-700/50 hover:from-slate-800 hover:to-slate-700">
+                <div class="flex items-center gap-3 flex-1 min-w-0">
+                    <div class="relative shrink-0">
+                        <div class="w-10 h-10 bg-amber-500 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/40 group-hover:scale-110 transition-transform">
+                            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+                            </svg>
+                        </div>
+                        <span class="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white text-[9px] font-black rounded-full flex items-center justify-center shadow-lg border-2 border-slate-900" x-text="totalItems"></span>
                     </div>
-                    <div class="flex items-center gap-2">
-                        <span class="text-xs font-black text-amber-400" x-text="formatRp(totalPrice)"></span>
-                        <span class="text-xs font-bold uppercase tracking-tight opacity-80">Checkout →</span>
+                    <div class="min-w-0">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Keranjang kamu</p>
+                        <p class="text-sm font-black text-white leading-tight" x-text="totalItems + ' item dipilih'"></p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 shrink-0">
+                    <div class="text-right">
+                        <p class="text-[10px] text-slate-400 font-medium">Total</p>
+                        <p class="text-sm font-black text-amber-400 leading-tight" x-text="formatRp(totalPrice)"></p>
+                    </div>
+                    <div class="w-9 h-9 bg-amber-500 rounded-2xl flex items-center justify-center shadow-lg shadow-amber-500/30 group-hover:translate-x-1 transition-transform">
+                        <svg class="w-4 h-4 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 5l7 7-7 7"/>
+                        </svg>
                     </div>
                 </div>
             </a>

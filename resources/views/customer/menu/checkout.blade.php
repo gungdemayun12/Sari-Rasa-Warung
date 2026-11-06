@@ -11,6 +11,7 @@
                 <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
             </a>
             <h1 class="font-bold text-slate-800 text-lg">Keranjang Anda</h1>
+            <x-resto-logo size="xs" class="ml-auto" />
         </div>
     </header>
 

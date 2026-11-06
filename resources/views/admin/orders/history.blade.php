@@ -18,7 +18,7 @@
                 <svg class="w-20 h-20 text-amber-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v4z"/></svg>
             </div>
             <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Total Pendapatan</p>
-            <p class="text-3xl font-black text-amber-600 leading-none">Rp {{ number_format($orders->sum('total'), 0, ',', '.') }}</p>
+            <p class="text-3xl font-black text-amber-600 leading-none">Rp {{ number_format($totalRevenue ?? $orders->sum('total_amount'), 0, ',', '.') }}</p>
         </div>
         <div class="bg-white p-8 rounded-2xl shadow-sm border border-slate-100">
             <p class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-1">Filter Aktif</p>

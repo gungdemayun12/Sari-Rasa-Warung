@@ -22,6 +22,10 @@
 
         <div class="relative z-10 px-4 py-6 sm:py-10 md:py-14 max-w-5xl mx-auto">
 
+            <div class="flex justify-center mb-5 sm:mb-6">
+                <x-resto-logo size="md" class="drop-shadow-sm" />
+            </div>
+
             <div class="text-center mb-8 sm:mb-10">
                 <div class="relative inline-block mb-5">
                     <div class="w-24 h-24 sm:w-28 sm:h-28 rounded-full flex items-center justify-center mx-auto {{ $useOrangeTheme ? 'bg-orange-50 ring-4 ring-orange-100' : 'bg-amber-50 ring-4 ring-amber-100' }} success-icon-bounce">
@@ -142,8 +146,8 @@
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4">Informasi Pesanan</h3>
                         <div class="space-y-3">
                             <div class="flex items-center justify-between">
-                                <div class="flex items-center gap-3">
-                                    <div class="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center">
+                                <div class="flex items-center gap-3 min-w-0">
+                                    <div class="w-9 h-9 rounded-xl bg-amber-50 flex items-center justify-center shrink-0">
                                         <svg class="w-4.5 h-4.5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 7a4 4 0 00-8 0 4 4 0 008 0zm0 14l-4-4h8l-4 4z" />
                                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 14v7m-3-3h6" />

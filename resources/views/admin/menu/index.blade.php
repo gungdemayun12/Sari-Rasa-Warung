@@ -7,7 +7,7 @@
     
     <div class="bg-white rounded-3xl shadow-sm border border-slate-100 p-6 space-y-4">
         <form method="GET" action="{{ role_route('admin.menu.index') }}" class="admin-live-search flex flex-col md:flex-row gap-4 items-center justify-between" data-live-search="menu" data-live-target="#menu-items-list">
-            <div class="flex flex-1 w-full gap-3">
+            <div class="flex flex-col sm:flex-row flex-1 w-full gap-3">
                 <input type="hidden" name="category" value="{{ request('category') }}">
                 <input type="hidden" name="status" value="{{ request('status', 'all') }}">
                 
@@ -18,7 +18,7 @@
                     <input type="text" name="search" value="{{ request('search') }}" placeholder="Cari nama menu..." autocomplete="off" class="w-full pl-12 pr-4 py-3 bg-slate-50 border-none rounded-xl text-sm font-semibold focus:ring-4 focus:ring-amber-500/10 focus:bg-white transition-all shadow-inner">
                 </div>
 
-                <div class="w-48">
+                <div class="w-full sm:w-48">
                     <select name="sort" class="w-full px-4 py-3 bg-slate-50 border-none rounded-xl text-sm font-bold text-slate-600 focus:ring-4 focus:ring-amber-500/10 shadow-inner outline-none cursor-pointer">
                         <option value="newest" {{ request('sort') == 'newest' ? 'selected' : '' }}>Urut: Terbaru</option>
                         <option value="price_asc" {{ request('sort') == 'price_asc' ? 'selected' : '' }}>Harga: Terendah</option>
@@ -28,7 +28,7 @@
                 </div>
             </div>
             
-            <button @click="openCreateModal()" class="w-full md:w-auto px-8 py-3 bg-slate-900 text-white rounded-xl font-black text-sm uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/20 flex items-center justify-center gap-3 active:scale-95">
+            <button type="button" @click="openCreateModal()" class="w-full md:w-auto px-8 py-3 bg-slate-900 text-white rounded-xl font-black text-sm uppercase tracking-widest hover:bg-slate-800 transition-all shadow-xl shadow-slate-900/20 flex items-center justify-center gap-3 active:scale-95">
                 <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/></svg>
                 Tambah Menu
             </button>
@@ -98,12 +98,12 @@
             </div>
 
             <div class="p-6">
-                <div class="flex items-start justify-between mb-3">
-                    <div>
+                <div class="flex items-start justify-between gap-3 mb-3">
+                    <div class="min-w-0">
                         <h3 class="text-base font-black text-slate-800 leading-tight">{{ $item->name }}</h3>
                         <p class="text-[11px] font-bold text-slate-400 uppercase tracking-widest mt-1">{{ $item->category->name }}</p>
                     </div>
-                    <p class="text-base font-black text-amber-600">{{ $item->formatted_price }}</p>
+                    <p class="text-base font-black text-amber-600 whitespace-nowrap shrink-0">{{ $item->formatted_price }}</p>
                 </div>
                 <p class="text-xs font-medium text-slate-500 line-clamp-2 mb-6 leading-relaxed">{{ $item->description }}</p>
                 <div class="flex items-center justify-between border-t border-slate-50 pt-4">
@@ -135,16 +135,17 @@
          x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" 
          class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-slate-900/80 backdrop-blur-sm" x-cloak>
         
-        <div @click.outside="!submitting && (openModal = false)" 
-             class="bg-white rounded-2xl shadow-2xl w-full max-w-xl max-h-[90vh] overflow-hidden flex flex-col transform transition-all"
+        <div @click.stop
+             style="background-color: var(--card-bg); color: var(--text-primary);"
+             class="rounded-2xl shadow-2xl w-full max-w-xl max-h-[90vh] overflow-hidden flex flex-col transform transition-all"
              x-transition:enter="ease-out duration-300" x-transition:enter-start="translate-y-8 scale-95" x-transition:enter-end="translate-y-0 scale-100">
             
-            <div class="px-10 py-8 bg-slate-50 border-b border-slate-100 flex items-center justify-between">
+            <div class="px-10 py-8 border-b flex items-center justify-between" style="background-color: var(--bg-secondary); border-color: var(--border-primary);">
                 <div>
-                    <h3 class="text-xl font-black text-slate-900 uppercase tracking-tight" x-text="editMode ? 'Edit Koleksi Menu' : 'Tambah Menu Baru'"></h3>
-                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest mt-1">Lengkapi rincian hidangan di bawah ini</p>
+                    <h3 class="text-xl font-black uppercase tracking-tight" style="color: var(--text-primary);" x-text="editMode ? 'Edit Koleksi Menu' : 'Tambah Menu Baru'"></h3>
+                    <p class="text-xs font-bold uppercase tracking-widest mt-1" style="color: var(--text-tertiary);">Lengkapi rincian hidangan di bawah ini</p>
                 </div>
-                <button @click="openModal = false" :disabled="submitting" class="w-10 h-10 flex items-center justify-center bg-white rounded-2xl text-slate-400 hover:text-slate-600 shadow-sm border border-slate-100 transition-all">
+                <button @click="openModal = false" :disabled="submitting" class="w-10 h-10 flex items-center justify-center rounded-2xl shadow-sm border transition-all" style="background-color: var(--card-bg); border-color: var(--border-primary); color: var(--text-tertiary);">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M6 18L18 6M6 6l12 12"/></svg>
                 </button>
             </div>
@@ -153,45 +154,49 @@
                 <div class="grid grid-cols-1 gap-8">
                     
                     <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">Nama Hidangan</label>
+                        <label class="block text-[10px] font-black uppercase tracking-[0.2em] mb-3 ml-1" style="color: var(--text-tertiary);">Nama Hidangan</label>
                         <input type="text" name="name" x-model="formData.name" placeholder="Misal: Nasi Goreng Spesial"
-                               :class="errors.name ? 'ring-2 ring-red-500 bg-red-50' : 'bg-slate-50 focus:bg-white'"
-                               class="w-full px-6 py-4 border-none rounded-2xl text-sm font-bold text-slate-800 placeholder-slate-300 transition-all shadow-inner focus:ring-4 focus:ring-amber-500/10 outline-none">
-                        <p x-show="errors.name" x-text="errors.name[0]" class="text-red-500 text-[10px] font-bold mt-2 ml-1 animate-pulse"></p>
+                               :class="errors.name ? 'ring-2 ring-red-500 bg-red-50' : ''"
+                               style="background-color: var(--input-bg); color: var(--text-primary); border-color: var(--input-border);"
+                               class="w-full px-6 py-4 border rounded-2xl text-sm font-bold placeholder-slate-300 transition-all shadow-inner focus:ring-4 focus:ring-amber-500/10 outline-none">
+                        <p x-show="errors.name" x-text="errors.name?.[0]" class="text-red-500 text-[10px] font-bold mt-2 ml-1 animate-pulse"></p>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         
                         <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">Kategori</label>
+                            <label class="block text-[10px] font-black uppercase tracking-[0.2em] mb-3 ml-1" style="color: var(--text-tertiary);">Kategori</label>
                             <select name="category_id" x-model="formData.category_id"
-                                    :class="errors.category_id ? 'ring-2 ring-red-500 bg-red-50' : 'bg-slate-50 focus:bg-white'"
-                                    class="w-full px-6 py-4 border-none rounded-2xl text-sm font-bold text-slate-800 transition-all shadow-inner focus:ring-4 focus:ring-amber-500/10 outline-none appearance-none">
+                                    :class="errors.category_id ? 'ring-2 ring-red-500 bg-red-50' : ''"
+                                    style="background-color: var(--input-bg); color: var(--text-primary); border-color: var(--input-border);"
+                                    class="w-full px-6 py-4 border rounded-2xl text-sm font-bold transition-all shadow-inner focus:ring-4 focus:ring-amber-500/10 outline-none appearance-none">
                                 <option value="">Pilih Kategori</option>
                                 @foreach($categories as $cat)<option value="{{ $cat->id }}">{{ $cat->name }}</option>@endforeach
                             </select>
-                            <p x-show="errors.category_id" x-text="errors.category_id[0]" class="text-red-500 text-[10px] font-bold mt-2 ml-1"></p>
+                            <p x-show="errors.category_id" x-text="errors.category_id?.[0]" class="text-red-500 text-[10px] font-bold mt-2 ml-1"></p>
                         </div>
                         
                         <div>
-                            <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">Harga (IDR)</label>
+                            <label class="block text-[10px] font-black uppercase tracking-[0.2em] mb-3 ml-1" style="color: var(--text-tertiary);">Harga (IDR)</label>
                             <div class="relative">
-                                <span class="absolute left-6 top-1/2 -translate-y-1/2 text-slate-300 font-black text-sm">Rp</span>
+                                <span class="absolute left-6 top-1/2 -translate-y-1/2 font-black text-sm" style="color: var(--text-tertiary);">Rp</span>
                                 <input type="number" name="price" x-model="formData.price" placeholder="50000"
-                                       :class="errors.price ? 'ring-2 ring-red-500 bg-red-50' : 'bg-slate-50 focus:bg-white'"
-                                       class="w-full pl-14 pr-6 py-4 border-none rounded-2xl text-sm font-bold text-slate-800 transition-all shadow-inner focus:ring-4 focus:ring-amber-500/10 outline-none">
+                                       :class="errors.price ? 'ring-2 ring-red-500 bg-red-50' : ''"
+                                       style="background-color: var(--input-bg); color: var(--text-primary); border-color: var(--input-border);"
+                                       class="w-full pl-14 pr-6 py-4 border rounded-2xl text-sm font-bold transition-all shadow-inner focus:ring-4 focus:ring-amber-500/10 outline-none">
                             </div>
-                            <p x-show="errors.price" x-text="errors.price[0]" class="text-red-500 text-[10px] font-bold mt-2 ml-1"></p>
+                            <p x-show="errors.price" x-text="errors.price?.[0]" class="text-red-500 text-[10px] font-bold mt-2 ml-1"></p>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">Deskripsi & Cerita Hidangan</label>
+                        <label class="block text-[10px] font-black uppercase tracking-[0.2em] mb-3 ml-1" style="color: var(--text-tertiary);">Deskripsi & Cerita Hidangan</label>
                         <textarea name="description" x-model="formData.description" rows="3" placeholder="Jelaskan keunikan rasa hidangan ini..."
-                                  class="w-full px-6 py-4 bg-slate-50 border-none rounded-2xl text-sm font-bold text-slate-800 transition-all shadow-inner focus:ring-4 focus:ring-amber-500/10 outline-none"></textarea>
+                                  style="background-color: var(--input-bg); color: var(--text-primary); border-color: var(--input-border);"
+                                  class="w-full px-6 py-4 border rounded-2xl text-sm font-bold transition-all shadow-inner focus:ring-4 focus:ring-amber-500/10 outline-none"></textarea>
                     </div>
 
-                    <div class="grid grid-cols-2 gap-6">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                         
                         <div>
                             <label class="block text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-3 ml-1">Waktu Saji (Mnt)</label>
@@ -207,7 +212,7 @@
                                 <svg class="w-5 h-5 text-amber-500 group-hover:scale-110 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"/></svg>
                                 <span class="text-xs font-black text-amber-700 uppercase tracking-widest" x-text="fileName || 'Upload Foto'"></span>
                             </label>
-                            <p x-show="errors.image" x-text="errors.image[0]" class="text-red-500 text-[10px] font-bold mt-2 ml-1"></p>
+                            <p x-show="errors.image" x-text="errors.image?.[0]" class="text-red-500 text-[10px] font-bold mt-2 ml-1"></p>
                         </div>
                     </div>
 
@@ -225,15 +230,14 @@
                         </div>
                     </div>
 
-                    <div class="p-6 bg-slate-50 rounded-3xl border border-slate-100 flex items-center justify-between">
+                    <div class="p-6 rounded-3xl border flex items-center justify-between menu-availability-box">
                         <div>
-                            <p class="text-xs font-black text-slate-800 uppercase tracking-widest">Status Ketersediaan</p>
-                            <p class="text-[10px] font-bold text-slate-400 mt-1 uppercase">Matikan jika menu sedang habis terjual</p>
+                            <p class="text-xs font-black uppercase tracking-widest" style="color: var(--text-primary);">Status Ketersediaan</p>
+                            <p class="text-[10px] font-bold mt-1 uppercase" style="color: var(--text-tertiary);">Matikan jika menu sedang habis terjual</p>
                         </div>
-                        <label class="relative inline-block cursor-pointer shrink-0">
-                            <input type="checkbox" name="is_available" value="1" :checked="formData.is_available" class="sr-only peer" x-model="formData.is_available">
-                            <div class="w-[52px] h-7 bg-slate-200 rounded-full peer-checked:bg-amber-500 transition-colors duration-200"></div>
-                            <span class="absolute left-[3px] top-[3px] w-[22px] h-[22px] bg-white rounded-full shadow-sm transition-transform duration-200 peer-checked:translate-x-[25px]"></span>
+                        <label class="menu-switch shrink-0" :class="formData.is_available ? 'is-on' : 'is-off'">
+                            <input type="checkbox" name="is_available" value="1" x-model="formData.is_available" class="sr-only">
+                            <span class="menu-switch-knob"></span>
                         </label>
                     </div>
                 </div>

@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>404 - Halaman Tidak Ditemukan | Resto Nusantara</title>
+    <title>404 - Halaman Tidak Ditemukan | Sari Rasa</title>
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     <style>
@@ -167,6 +168,12 @@
             font-weight: 800;
             color: #f59e0b;
         }
+        .brand-logo {
+            display: block;
+            width: 150px;
+            height: auto;
+            margin: 0 auto 24px;
+        }
 
         @media (min-width: 640px) {
             .btn-group { flex-direction: row; justify-content: center; }
@@ -177,6 +184,8 @@
 </head>
 <body>
     <div class="container">
+        <img src="{{ asset('storage/logo.png') }}" alt="Sari Rasa" class="brand-logo">
+
         <div class="illustration">
             <div class="plate">
                 <div class="plate-icon">🍽️</div>
@@ -208,7 +217,7 @@
 
         <div class="footer">
             <p class="footer-text">
-                <span class="footer-brand">Resto Nusantara</span> &middot; Sistem Pemesanan Digital
+                <span class="footer-brand">Sari Rasa</span> &middot; Sistem Pemesanan Digital
             </p>
         </div>
     </div>

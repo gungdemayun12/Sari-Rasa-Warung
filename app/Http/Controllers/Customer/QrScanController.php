@@ -110,15 +110,23 @@ class QrScanController extends Controller
     public function storeCustomerData(Request $request)
     {
         $request->validate([
-            'session_token' => 'required|string',
-            'customer_name' => 'required|string|max:255',
-            'customer_phone' => 'required|string|min:10|max:15',
-            'latitude' => 'nullable|string',
-            'longitude' => 'nullable|string',
+            'session_token' => ['required', 'string', 'max:100'],
+            'customer_name' => [
+                'required', 'string', 'min:2', 'max:50',
+                'regex:/^[\p{L}\p{M}][\p{L}\p{M}\s.\'’\-]*$/u',
+            ],
+            'customer_phone' => ['required', 'string', 'max:20'],
+            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
+            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
         ], [
-            'customer_name.required' => 'Nama harus diisi',
-            'customer_phone.required' => 'Nomor HP harus diisi',
-            'customer_phone.min' => 'Nomor HP minimal 10 digit',
+            'customer_name.required' => 'Nama lengkap wajib diisi.',
+            'customer_name.min' => 'Nama minimal 2 karakter.',
+            'customer_name.max' => 'Nama maksimal 50 karakter.',
+            'customer_name.regex' => 'Nama hanya boleh berisi huruf, spasi, titik, apostrof, dan tanda hubung.',
+            'customer_phone.required' => 'Nomor WhatsApp wajib diisi.',
+            'customer_phone.max' => 'Nomor WhatsApp terlalu panjang.',
+            'latitude.numeric' => 'Koordinat lokasi tidak valid.',
+            'longitude.numeric' => 'Koordinat lokasi tidak valid.',
         ]);
 
         $sessionToken = $request->session_token;
@@ -127,13 +135,37 @@ class QrScanController extends Controller
         if (!$session || !$session->isActive()) {
             return response()->json([
                 'success' => false,
-                'message' => 'Session tidak valid atau sudah expired',
+                'message' => 'Sesi meja tidak valid atau sudah berakhir. Silakan scan ulang QR code.',
+                'errors' => [
+                    'session_token' => ['Sesi meja tidak valid atau sudah berakhir. Silakan scan ulang QR code.'],
+                ],
             ], 403);
         }
 
+        // Normalize name: collapse extra whitespace.
+        $name = preg_replace('/\s+/u', ' ', trim((string) $request->customer_name));
+
+        // Normalize phone: keep digits, drop Indonesian country/leading zero.
+        $phone = preg_replace('/\D+/', '', (string) $request->customer_phone);
+        if (str_starts_with($phone, '62')) {
+            $phone = substr($phone, 2);
+        } elseif (str_starts_with($phone, '0')) {
+            $phone = substr($phone, 1);
+        }
+
+        if (!preg_match('/^8\d{8,12}$/', $phone)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Nomor WhatsApp tidak valid.',
+                'errors' => [
+                    'customer_phone' => ['Nomor WhatsApp harus diawali angka 8 dan terdiri dari 9–13 digit (contoh: 81234567890).'],
+                ],
+            ], 422);
+        }
+
         session()->put('customer_data_' . $sessionToken, [
-            'name' => $request->customer_name,
-            'phone' => $request->customer_phone,
+            'name' => $name,
+            'phone' => '62' . $phone,
             'latitude' => $request->latitude,
             'longitude' => $request->longitude,
         ]);

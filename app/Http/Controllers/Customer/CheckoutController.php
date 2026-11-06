@@ -36,7 +36,7 @@ class CheckoutController extends Controller
         $cart = session()->get('cart_' . $sessionToken, []);
 
         $subtotal = collect($cart)->sum('subtotal');
-        $tax = $subtotal * 0.1;
+        $tax = round($subtotal * 0.11);
         $total = $subtotal + $tax;
 
         return view('customer.checkout', [
@@ -51,10 +51,29 @@ class CheckoutController extends Controller
 
     public function process(Request $request)
     {
-        $request->validate([
-            'session_token' => 'required|string',
-            'payment_method' => 'required|in:cashier,online',
-            'notes' => 'nullable|string|max:1000',
+        $validated = $request->validate([
+            'session_token' => ['required', 'string', 'max:100'],
+            'payment_method' => ['required', 'string', 'in:cashier,online'],
+            'notes' => ['nullable', 'string', 'max:300'],
+            'items' => ['required', 'array', 'min:1', 'max:50'],
+            'items.*.menu_item_id' => ['required', 'integer', 'distinct', 'exists:menu_items,id'],
+            'items.*.quantity' => ['required', 'integer', 'min:1', 'max:99'],
+            'items.*.notes' => ['nullable', 'string', 'max:100'],
+        ], [
+            'session_token.required' => 'Sesi meja tidak ditemukan.',
+            'payment_method.required' => 'Pilih metode pembayaran terlebih dahulu.',
+            'payment_method.in' => 'Metode pembayaran tidak valid.',
+            'notes.max' => 'Catatan pesanan maksimal 300 karakter.',
+            'items.required' => 'Keranjang masih kosong.',
+            'items.min' => 'Keranjang masih kosong.',
+            'items.max' => 'Terlalu banyak jenis item dalam satu pesanan.',
+            'items.*.menu_item_id.required' => 'Ada item pesanan yang tidak valid.',
+            'items.*.menu_item_id.exists' => 'Ada menu yang sudah tidak tersedia.',
+            'items.*.menu_item_id.distinct' => 'Ada menu yang terduplikasi di keranjang.',
+            'items.*.quantity.required' => 'Jumlah item wajib diisi.',
+            'items.*.quantity.min' => 'Jumlah item minimal 1.',
+            'items.*.quantity.max' => 'Jumlah item maksimal 99.',
+            'items.*.notes.max' => 'Catatan per item maksimal 100 karakter.',
         ]);
 
         try {
@@ -65,34 +84,46 @@ class CheckoutController extends Controller
                 ->first();
 
             if (!$session || !$session->isActive()) {
+                DB::rollBack();
+
                 return response()->json([
                     'success' => false,
-                    'message' => 'Session tidak valid atau sudah expired',
+                    'message' => 'Sesi meja tidak valid atau sudah berakhir. Silakan scan ulang QR code.',
                 ], 403);
             }
 
             $customerData = session()->get('customer_data_' . $request->session_token);
             if (!$customerData) {
+                DB::rollBack();
+
                 return response()->json([
                     'success' => false,
-                    'message' => 'Data customer tidak ditemukan',
+                    'message' => 'Data pelanggan tidak ditemukan. Silakan isi data diri kembali.',
                 ], 400);
             }
 
-            $items = $request->items;
-
-            if (empty($items)) {
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Keranjang kosong',
-                ], 400);
-            }
+            $items = $validated['items'];
 
             $subtotal = 0;
             $orderItemsData = [];
 
             foreach ($items as $item) {
-                $menuItem = MenuItem::findOrFail($item['menu_item_id']);
+                $menuItem = MenuItem::whereKey($item['menu_item_id'])
+                    ->where('is_available', true)
+                    ->first();
+
+                if (!$menuItem) {
+                    DB::rollBack();
+
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Salah satu menu sudah tidak tersedia. Silakan perbarui keranjang Anda.',
+                        'errors' => [
+                            'items' => ['Salah satu menu sudah tidak tersedia. Silakan perbarui keranjang Anda.'],
+                        ],
+                    ], 422);
+                }
+
                 $itemSubtotal = $menuItem->price * $item['quantity'];
                 $subtotal += $itemSubtotal;
 
@@ -101,7 +132,7 @@ class CheckoutController extends Controller
                     'quantity' => $item['quantity'],
                     'price' => $menuItem->price,
                     'subtotal' => $itemSubtotal,
-                    'notes' => $item['notes'] ?? null,
+                    'notes' => isset($item['notes']) ? trim($item['notes']) : null,
                 ];
             }
 
@@ -114,10 +145,10 @@ class CheckoutController extends Controller
                 'order_number' => Order::generateOrderNumber(),
                 'customer_name' => $customerData['name'],
                 'customer_phone' => $customerData['phone'],
-                'payment_method' => $request->payment_method,
+                'payment_method' => $validated['payment_method'],
                 'payment_status' => 'unpaid',
-                'status' => $request->payment_method === 'online' ? 'pending_payment' : 'pending_confirmation',
-                'notes' => $request->notes,
+                'status' => $validated['payment_method'] === 'online' ? 'pending_payment' : 'pending_confirmation',
+                'notes' => isset($validated['notes']) ? trim($validated['notes']) : null,
                 'subtotal' => $subtotal,
                 'tax' => $tax,
                 'total_amount' => $total,
@@ -132,7 +163,7 @@ class CheckoutController extends Controller
 
             DB::commit();
 
-            if ($request->payment_method === 'cashier') {
+            if ($validated['payment_method'] === 'cashier') {
                 return response()->json([
                     'success' => true,
                     'message' => 'Order berhasil dibuat, silakan tunjukkan barcode ke kasir',
@@ -140,7 +171,7 @@ class CheckoutController extends Controller
                 ]);
             }
 
-            if ($request->payment_method === 'online') {
+            if ($validated['payment_method'] === 'online') {
                 try {
                     $this->generateMidtransSnapToken($order);
 

@@ -64,85 +64,84 @@
         @forelse($tables as $table)
         @php
             $statusConfig = [
-                'available' => ['border' => 'border-emerald-100', 'bg' => 'bg-emerald-50/30', 'dot' => 'bg-emerald-500', 'shadow' => 'hover:shadow-emerald-500/10', 'text' => 'text-emerald-600'],
-                'occupied' => ['border' => 'border-red-100', 'bg' => 'bg-red-50/30', 'dot' => 'bg-red-500', 'shadow' => 'hover:shadow-red-500/10', 'text' => 'text-red-600'],
-                'reserved' => ['border' => 'border-amber-100', 'bg' => 'bg-amber-50/30', 'dot' => 'bg-amber-500', 'shadow' => 'hover:shadow-amber-500/10', 'text' => 'text-amber-600'],
+                'available' => ['card' => 'table-card--available', 'dot' => 'bg-emerald-500', 'shadow' => 'hover:shadow-emerald-500/10', 'text' => 'text-emerald-600'],
+                'occupied' => ['card' => 'table-card--occupied', 'dot' => 'bg-red-500', 'shadow' => 'hover:shadow-red-500/10', 'text' => 'text-red-600'],
+                'reserved' => ['card' => 'table-card--reserved', 'dot' => 'bg-amber-500', 'shadow' => 'hover:shadow-amber-500/10', 'text' => 'text-amber-600'],
             ];
-            $cfg = $statusConfig[$table->status] ?? ['border' => 'border-slate-100', 'bg' => 'bg-slate-50/30', 'dot' => 'bg-slate-500', 'shadow' => '', 'text' => 'text-slate-600'];
+            $cfg = $statusConfig[$table->status] ?? ['card' => 'table-card--available', 'dot' => 'bg-slate-500', 'shadow' => '', 'text' => 'text-slate-600'];
             $locIcon = match($table->location) { 'indoor' => '🏠', 'outdoor' => '🌳', 'vip' => '💎', default => '📍' };
         @endphp
-        <div class="group relative bg-white rounded-2xl border-2 {{ $cfg['border'] }} p-2 hover:shadow-2xl {{ $cfg['shadow'] }} transition-all duration-700 transform hover:-translate-y-2 overflow-hidden">
+        <div class="group relative table-card {{ $cfg['card'] }} rounded-2xl border-2 p-2 hover:shadow-2xl {{ $cfg['shadow'] }} transition-all duration-700 transform hover:-translate-y-2 overflow-hidden">
             <button type="button" @click='openEditModal(@json($table))'
-                    class="absolute top-4 right-4 z-20 px-3 py-2 bg-white/90 text-slate-700 text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl border border-slate-200 shadow-sm hover:bg-slate-100 transition-all">
+                    class="table-card-edit absolute top-4 right-4 z-20 px-3 py-2 text-[10px] font-black uppercase tracking-[0.2em] rounded-2xl shadow-sm transition-all">
                 Edit
             </button>
-            <div class="{{ $cfg['bg'] }} rounded-2xl p-8 h-full flex flex-col relative z-10">
-                <div class="flex items-start justify-between mb-8">
-                    <div>
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="w-2 h-2 rounded-full {{ $cfg['dot'] }} {{ $table->status !== 'available' ? 'animate-pulse' : '' }}"></span>
-                            <span class="text-[9px] font-black {{ $cfg['text'] }} uppercase tracking-[0.2em]">{{ $table->status_label }}</span>
-                        </div>
-                        <h3 class="text-3xl font-black text-slate-900 tracking-tighter">Meja {{ $table->number }}</h3>
+            <div class="table-card-inner rounded-2xl p-8 h-full flex flex-col relative z-10">
+                <div class="mb-8 pr-16">
+                    <div class="flex items-center gap-2 mb-2">
+                        <span class="w-2 h-2 rounded-full {{ $cfg['dot'] }} {{ $table->status !== 'available' ? 'animate-pulse' : '' }}"></span>
+                        <span class="text-[9px] font-black {{ $cfg['text'] }} uppercase tracking-[0.2em]">{{ $table->status_label }}</span>
                     </div>
-                    <div class="px-4 py-2 bg-white/80 backdrop-blur-md border border-white shadow-sm rounded-2xl text-[10px] font-black text-slate-800 uppercase tracking-widest">
+                    <h3 class="table-card-title text-3xl font-black tracking-tighter whitespace-nowrap">Meja {{ $table->number }}</h3>
+                    <div class="table-card-location inline-flex items-center gap-1 mt-3 px-3 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest">
                         {{ $locIcon }} {{ $table->location_label }}
                     </div>
                 </div>
 
                 <div class="space-y-4 mb-10 flex-1">
                     <div class="flex items-center justify-between">
-                        <span class="text-[10px] font-black text-slate-400 uppercase tracking-widest">👤 Kapasitas</span>
-                        <span class="text-xs font-black text-slate-800">{{ $table->capacity }} Tamu</span>
+                        <span class="table-card-label text-[10px] font-black uppercase tracking-widest">👤 Kapasitas</span>
+                        <span class="table-card-value text-xs font-black">{{ $table->capacity }} Tamu</span>
                     </div>
                     
                     @php $session = $table->activeSession; @endphp
                     @if($session)
-                    <div class="p-5 bg-white rounded-2xl border border-slate-50 shadow-xl shadow-slate-900/5 mt-6 relative overflow-hidden group/session">
+                    <div class="table-card-session p-5 rounded-2xl border shadow-xl shadow-slate-900/5 mt-6 relative overflow-hidden group/session">
                         <div class="absolute top-0 right-0 p-2 opacity-[0.03]">
                             <svg class="w-12 h-12 text-blue-500" fill="currentColor" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/></svg>
                         </div>
                         <div class="flex items-center justify-between mb-3">
                             <p class="text-[9px] font-black text-blue-500 uppercase tracking-[0.2em]">Sesi Aktif</p>
-                            <span class="text-[9px] font-bold text-slate-400">Exp: {{ $session->expires_at->format('H:i') }}</span>
+                            <span class="table-card-label text-[9px] font-bold">Exp: {{ $session->expires_at->format('H:i') }}</span>
                         </div>
-                        <p class="text-xs font-black text-slate-800 truncate mb-4">{{ $session->orders->first()->customer_name ?? 'Pelanggan' }}</p>
+                        <p class="table-card-value text-xs font-black truncate mb-4">{{ $session->orders->first()->customer_name ?? 'Pelanggan' }}</p>
                         <button @click="closeSession({{ $session->id }}, '{{ $table->number }}')" 
                                 class="w-full py-3 bg-red-50 text-red-600 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-red-600 hover:text-white transition-all active:scale-95">
                             Tutup Sesi
                         </button>
                     </div>
                     @else
-                    <div class="h-16 flex flex-col items-center justify-center border-2 border-dashed border-slate-200/50 rounded-2xl mt-6">
-                        <span class="text-[9px] font-black text-slate-300 uppercase tracking-[0.3em]">Meja Kosong</span>
+                    <div class="table-card-empty h-16 flex flex-col items-center justify-center border-2 border-dashed rounded-2xl mt-6">
+                        <span class="text-[9px] font-black uppercase tracking-[0.3em]">Meja Kosong</span>
                     </div>
                     @endif
                 </div>
 
-                <div class="mt-auto grid grid-cols-5 gap-3">
+                <div class="mt-auto space-y-2.5">
                     <button @click="showQr('{{ route('qr.scan', ['qrToken' => $table->qr_token]) }}', {{ $table->number }})" 
-                            class="col-span-2 py-4 bg-white text-slate-800 border border-slate-100 rounded-2xl hover:bg-slate-50 hover:border-slate-300 transition-all flex items-center justify-center shadow-sm">
-                        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                            class="table-card-qr w-full py-3 border rounded-2xl transition-all flex items-center justify-center gap-2 shadow-sm">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v1m6 11h2m-6 0h-2v4m0-11v3m0 0h.01M12 12h4.01M16 20h4M4 12h4m12 0h.01M5 8h2a1 1 0 001-1V5a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1zm12 0h2a1 1 0 001-1V5a1 1 0 00-1-1h-2a1 1 0 00-1 1v2a1 1 0 001 1zM5 20h2a1 1 0 001-1v-2a1 1 0 00-1-1H5a1 1 0 00-1 1v2a1 1 0 001 1z"/></svg>
+                        <span class="text-[9px] font-black uppercase tracking-widest">QR Code</span>
                     </button>
                     
-                    <div class="col-span-3 relative">
+                    <div class="relative">
                         <form method="POST" action="{{ role_route('admin.tables.updateStatus', $table) }}">
                             @csrf @method('PATCH')
                             <select name="status" onchange="confirmStatusChange(this)" 
-                                    class="w-full pl-6 pr-10 py-4 bg-slate-900 text-white rounded-2xl text-[10px] font-black uppercase tracking-widest appearance-none cursor-pointer focus:ring-4 focus:ring-amber-500/20 transition-all shadow-xl shadow-slate-900/10">
+                                    class="table-card-select w-full pl-4 pr-9 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest appearance-none cursor-pointer focus:ring-4 focus:ring-amber-500/20 transition-all shadow-xl shadow-slate-900/10">
                                 <option value="available" {{ $table->status=='available'?'selected':'' }}>Tersedia</option>
                                 <option value="occupied" {{ $table->status=='occupied'?'selected':'' }}>Terisi</option>
                                 <option value="reserved" {{ $table->status=='reserved'?'selected':'' }}>Dipesan</option>
                             </select>
-                            <div class="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none">
-                                <svg class="w-4 h-4 text-white/40" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/></svg>
+                            <div class="absolute right-3 top-1/2 -translate-y-1/2 pointer-events-none">
+                                <svg class="table-card-select-arrow w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7"/></svg>
                             </div>
                         </form>
                     </div>
                 </div>
             </div>
             
-            <div class="absolute -bottom-10 -right-10 w-32 h-32 bg-slate-100/50 rounded-full blur-3xl -z-0"></div>
+            <div class="table-card-glow absolute -bottom-10 -right-10 w-32 h-32 rounded-full blur-3xl -z-0"></div>
         </div>
         @empty
         <div class="col-span-full py-20 text-center">
@@ -174,20 +173,20 @@
             </div>
 
             <form id="table-form" @submit.prevent="handleStoreTable" class="p-10 space-y-8 max-h-[70vh] overflow-y-auto">
-                <div class="grid grid-cols-2 gap-6">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                     <div class="space-y-3">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Nomor Meja</label>
                         <input type="number" name="number" x-model="tableForm.number" required min="1" placeholder="Ex: 10"
                                :class="errors.number ? 'ring-2 ring-red-500 bg-red-50' : 'bg-slate-100 focus:bg-white'"
                                class="w-full px-6 py-4 border-none rounded-2xl text-sm font-black text-slate-800 transition-all shadow-inner focus:ring-4 focus:ring-amber-500/10 outline-none">
-                        <p x-show="errors.number" x-text="errors.number[0]" class="text-red-500 text-[10px] font-bold mt-2 ml-1"></p>
+                        <p x-show="errors.number" x-text="errors.number?.[0]" class="text-red-500 text-[10px] font-bold mt-2 ml-1"></p>
                     </div>
                     <div class="space-y-3">
                         <label class="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] ml-1">Kapasitas</label>
                         <input type="number" name="capacity" x-model="tableForm.capacity" required min="1" max="20"
                                :class="errors.capacity ? 'ring-2 ring-red-500 bg-red-50' : 'bg-slate-100 focus:bg-white'"
                                class="w-full px-6 py-4 border-none rounded-2xl text-sm font-black text-slate-800 transition-all shadow-inner focus:ring-4 focus:ring-amber-500/10 outline-none">
-                        <p x-show="errors.capacity" x-text="errors.capacity[0]" class="text-red-500 text-[10px] font-bold mt-2 ml-1"></p>
+                        <p x-show="errors.capacity" x-text="errors.capacity?.[0]" class="text-red-500 text-[10px] font-bold mt-2 ml-1"></p>
                     </div>
                 </div>
                 
@@ -203,7 +202,7 @@
                         </label>
                         @endforeach
                     </div>
-                    <p x-show="errors.location" x-text="errors.location[0]" class="text-red-500 text-[10px] font-bold mt-2 ml-1"></p>
+                    <p x-show="errors.location" x-text="errors.location?.[0]" class="text-red-500 text-[10px] font-bold mt-2 ml-1"></p>
                 </div>
 
                 <button type="submit" :disabled="submitting"
@@ -247,6 +246,7 @@ function tableManager() {
         openModal: false,
         openQrModal: false,
         qrTableNumber: null,
+        editingTableId: null,
         submitting: false,
         tableForm: { number: '', capacity: 4, location: 'indoor' },
         errors: {},
@@ -273,7 +273,7 @@ function tableManager() {
             const canvas = document.querySelector('#qr-container canvas');
             if (canvas) {
                 const link = document.createElement('a');
-                link.download = `QR_RestoNusa_Meja_${this.qrTableNumber}.png`;
+                link.download = `QR_SariRasa_Meja_${this.qrTableNumber}.png`;
                 link.href = canvas.toDataURL();
                 link.click();
             }

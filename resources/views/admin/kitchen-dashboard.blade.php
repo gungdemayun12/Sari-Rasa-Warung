@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 datasets: [{
                     label: 'Pesanan',
                     data: counts,
-                    backgroundColor: counts.map(c => c > 0 ? '#f59e0b' : '#f1f5f9'),
+                    backgroundColor: counts.map(c => c > 0 ? '#f59e0b' : 'rgba(148,163,184,.18)'),
                     borderRadius: 6,
                     barPercentage: 0.7
                 }]
@@ -195,7 +195,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 plugins: { legend: { display: false } },
                 scales: {
                     x: { grid: { display: false }, ticks: { font: { size: 10, weight: '600' }, maxRotation: 0 } },
-                    y: { beginAtZero: true, grid: { color: '#f8fafc' }, ticks: { stepSize: 1 } }
+                    y: { beginAtZero: true, grid: { color: 'rgba(148,163,184,.18)' }, ticks: { stepSize: 1 } }
                 }
             }
         });

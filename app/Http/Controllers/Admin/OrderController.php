@@ -37,7 +37,8 @@ class OrderController extends Controller
         if ($request->filled('status') && $request->status !== 'all') {
             $query->where('status', $request->status);
         } else {
-            $query->whereNotIn('status', ['completed', 'cancelled', 'pending_confirmation', 'pending_payment']);
+            // "all" tab: sembunyikan completed & cancelled (tampil di riwayat)
+            $query->whereNotIn('status', ['completed', 'cancelled']);
         }
 
         if ($request->filled('date')) {
@@ -62,13 +63,13 @@ class OrderController extends Controller
         $date = $request->filled('date') ? $request->date : Carbon::today();
 
         return [
-            'all' => Order::whereDate('created_at', $date)->count(),
-            'pending' => Order::whereDate('created_at', $date)->where('status', 'pending')->count(),
+            'all'             => Order::whereDate('created_at', $date)->whereNotIn('status', ['completed', 'cancelled'])->count(),
+            'pending'         => Order::whereDate('created_at', $date)->where('status', 'pending')->count(),
             'payment_success' => Order::whereDate('created_at', $date)->where('status', 'payment_success')->count(),
-            'processing' => Order::whereDate('created_at', $date)->where('status', 'processing')->count(),
-            'ready' => Order::whereDate('created_at', $date)->where('status', 'ready')->count(),
-            'completed' => Order::whereDate('created_at', $date)->where('status', 'completed')->count(),
-            'cancelled' => Order::whereDate('created_at', $date)->where('status', 'cancelled')->count(),
+            'processing'      => Order::whereDate('created_at', $date)->where('status', 'processing')->count(),
+            'ready'           => Order::whereDate('created_at', $date)->where('status', 'ready')->count(),
+            'completed'       => Order::whereDate('created_at', $date)->where('status', 'completed')->count(),
+            'cancelled'       => Order::whereDate('created_at', $date)->where('status', 'cancelled')->count(),
         ];
     }
 
@@ -219,9 +220,10 @@ class OrderController extends Controller
             });
         }
 
+        $totalRevenue = (clone $query)->sum('total_amount');
         $orders = $query->orderBy('created_at', 'desc')->paginate(20);
 
-        return view('admin.orders.history', compact('orders'));
+        return view('admin.orders.history', compact('orders', 'totalRevenue'));
     }
 
     public function scanBarcode(Request $request)

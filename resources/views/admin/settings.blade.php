@@ -51,7 +51,7 @@
                         <td class="px-4 py-4">
                             <div class="flex flex-wrap gap-1">
                                 @foreach($user->effective_permissions as $perm)
-                                    <span class="px-2 py-0.5 bg-slate-100 text-slate-500 text-[9px] font-bold rounded-full">{{ ucfirst(str_replace('_', ' ', $perm)) }}</span>
+                                    <span class="px-2 py-0.5 bg-slate-100 text-slate-500 text-[9px] font-bold rounded-full whitespace-nowrap">{{ ucfirst(str_replace('_', ' ', $perm)) }}</span>
                                 @endforeach
                             </div>
                         </td>

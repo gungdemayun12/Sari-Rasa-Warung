@@ -6,6 +6,9 @@
         <div class="w-full max-w-md bg-white rounded-3xl shadow-xl p-8 border border-slate-100">
             
             <div class="text-center mb-8">
+                <div class="flex justify-center mb-5">
+                    <x-resto-logo size="md" />
+                </div>
                 <div @click="bypassLocation()"
                     class="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-br from-amber-400 to-amber-600 rounded-3xl mb-5 shadow-[0_8px_30px_rgba(245,158,11,0.3)] text-white transform rotate-3 hover:rotate-6 transition-transform cursor-pointer">
                     <svg class="w-10 h-10 -rotate-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">

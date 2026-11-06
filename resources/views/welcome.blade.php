@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Resto Nusantara - Masakan Autentik Indonesia</title>
+    <title>Sari Rasa - Masakan Autentik Indonesia</title>
+    <link rel="icon" type="image/png" href="{{ asset('favicon.png') }}">
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Playfair+Display:wght@700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
@@ -42,7 +43,7 @@
 
         <div class="relative z-10 text-center max-w-lg w-full">
             <div class="inline-flex items-center justify-center p-4 md:p-5 bg-white/10 backdrop-blur-xl rounded-2xl border border-white/10 mb-10 transform hover:scale-105 transition-transform duration-500">
-                <x-resto-logo size="hero" class="drop-shadow-2xl" />
+                <x-resto-logo size="hero" variant="light" class="drop-shadow-2xl" />
             </div>
             
             <p class="text-slate-400 text-base md:text-lg mb-12 max-w-sm mx-auto leading-relaxed">

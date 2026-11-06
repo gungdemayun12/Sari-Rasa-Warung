@@ -3,7 +3,7 @@
 @section('title', 'Scan Barcode Order')
 
 @section('content')
-<div class="container mx-auto px-4 py-8">
+<div class="container mx-auto px-4 py-8 scan-page">
     <div class="max-w-2xl mx-auto">
         <div class="bg-white rounded-lg shadow-md p-6 mb-6">
             <h1 class="text-2xl font-bold text-gray-800 mb-2">Scan Barcode Order</h1>
